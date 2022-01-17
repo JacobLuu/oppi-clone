@@ -1,27 +1,20 @@
-import { useState } from 'react'
-
+import "./App.css";
+import React from "react";
+import { BrowserRouter , Route, Routes } from "react-router-dom";
+import LogIn from "./Components/LogIn";
+import List from "./Components/List";
+import Detail from "./Components/Detail";
 function App() {
-
-  const [info, setInfo]= useState({
-    name:'Jacob',
-    age: 24,
-    address: 'Hà Nội'
-  });
-
-  const handleUpdate = () => {
-    setInfo(
-      pre => ({
-        ...pre,
-        name: 'Jacob Lưu',
-        bio: 'Hello'
-      }))
-  }
   return (
-    <div className='App' style={{padding:20}}>
-      <h1>{JSON.stringify(info)}</h1>
-      <button onClick = {handleUpdate}>Update</button>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LogIn />}></Route>
 
-    </div>
+          <Route path="/polllist" element={<List />}></Route>
+
+          <Route path="/detail" element={<Detail />}></Route>
+        </Routes>
+      </BrowserRouter>
   );
 }
 
