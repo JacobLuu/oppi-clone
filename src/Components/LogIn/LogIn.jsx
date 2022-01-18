@@ -1,20 +1,64 @@
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import "./login.css";
-import { Link } from "react-router-dom";
+
 const Login = () => {
-    return ( 
-        <section className="login-container">
-            <div className="login-title"> Log in</div>
-            <form>
-                <label>USERNAME</label>
-                <input type="text" placeholder="Enter your username" />
-                <label>PASSWORD</label>
-                <input type="password" placeholder="Enter your password" />
-                <button type="submit"> Continue </button>
-            </form>
-            <div className="login-register"> Don't have an account yet? </div>
-            <Link className="login-register-link" to="/register">Register one for free </Link>
-        </section>
-     );
-}
- 
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      // USER NAME
+      username: Yup.string()
+        .required("Please enter your username")
+        .min(4, "Must be 4 characters or more"),
+      //PASSWORD
+      password: Yup.string()
+        .required("Please enter your password")
+        .matches(
+          /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d][A-Za-z\d!@#$%^&*()_+]{8,14}$/,
+          "Password must be 8-14 characters and contain at least one letter, one number and a special character"
+        ),
+    }),
+    onSubmit: (values) => {
+      window.alert("Form submitted");
+      console.log(values);
+    },
+  });
+
+  return (
+    <section>
+      <form className="infoform" onSubmit={formik.handleSubmit}>
+        <label> Username </label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value={formik.values.username}
+          onChange={formik.handleChange}
+          placeholder="Enter username"
+        />
+        {formik.errors.username && (
+          <p className="errorMessage"> {formik.errors.username} </p>
+        )}
+
+        <label> Password </label>
+        <input
+          type="text"
+          id="password"
+          name="password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          placeholder="Enter your password"
+        />
+        {formik.errors.password && (
+          <p className="errorMessage"> {formik.errors.password} </p>
+        )}
+        <button type="submit"> Submit </button>
+      </form>
+    </section>
+  );
+};
+
 export default Login;
