@@ -1,20 +1,33 @@
 import "./App.css";
-import React from "react";
-import { BrowserRouter , Route, Routes } from "react-router-dom";
-import LogIn from "./Components/LogIn";
-import List from "./Components/List";
-import Detail from "./Components/Detail";
+import React , { useState} from 'react';
+import Login from "./Components/LogIn/LogIn";
+
 function App() {
+  const adminUser = {
+    email: "admin@admin.com",
+    password: "admin123"
+  }
+
+  const [user, setUser] = useState({name: "", email: ""});
+  const [error, setError] =  useState("");
+
+  const Login = details => {
+    console.log(details);
+  }
+  const Logout = () => {
+    console.log("Logout");
+  }
   return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LogIn />}></Route>
-
-          <Route path="/polllist" element={<List />}></Route>
-
-          <Route path="/detail" element={<Detail />}></Route>
-        </Routes>
-      </BrowserRouter>
+      <div className="App">
+        {(user.email != "") ? (
+          <div className = "welcome">
+              <h2>Welcome, <span>{user.name}</span></h2>
+              <button>Logout</button>
+          </div>
+        ) : (
+          <Login />
+        )}
+      </div>
   );
 }
 
