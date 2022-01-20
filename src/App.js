@@ -1,12 +1,18 @@
 import "./App.css";
-import Login from "./Components/LogIn/Login";
+import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import Login from "./Components/Login/Login";
+import NavBar from "./NavBar/NavBar";
 
 function App() {
   return (
-    <div className="App">
-      <header> LOGIN </header>
-      <Login />
-    </div>
+    <Router>
+      <NavBar />
+      <div className="App"> 
+        <Routes>
+          <Route path="/login" element={ <Login />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

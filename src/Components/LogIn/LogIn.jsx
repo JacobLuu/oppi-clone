@@ -1,62 +1,59 @@
-import { useFormik } from "formik";
-import * as Yup from "yup";
-import "./login.css";
-
+import "./Login.css";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 const Login = () => {
-  const formik = useFormik({
-    initialValues: {
-      username: "",
-      password: "",
-    },
-    validationSchema: Yup.object({
-      // USER NAME
-      username: Yup.string()
-        .required("Please enter your username")
-        .min(4, "Must be 4 characters or more"),
-      //PASSWORD
-      password: Yup.string()
-        .required("Please enter your password")
-        .matches(
-          /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d][A-Za-z\d!@#$%^&*()_+]{8,14}$/,
-          "Password must be 8-14 characters and contain at least one letter, one number and a special character"
-        ),
-    }),
-    onSubmit: (values) => {
-      window.alert("Form submitted");
-      console.log(values);
-    },
-  });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const user = {
+      username: username,
+      password: password,
+    };
+    console.log(user);
+  };
+  //VALIDATE USERNAME
+  useEffect(() => {
+    let error = {};
+    if (username.trim() && username.length < 4) {
+      error.username = "Username required";
+      console.log("username is too short");
+    }
+  }, [username]);
+  //VALIDATE PASSWORD
+  useEffect(() => {
+    let error = {};
+    if (password.trim() && password.length < 6) {
+      error.password = "Password must be more than 6 character";
+      console.log("password is too short");
+    }
+  }, [password]);
   return (
-    <section>
-      <form className="infoform" onSubmit={formik.handleSubmit}>
-        <label> Username </label>
+    <section className="login-container">
+      <div className="login-title"> Log in</div>
+      <form onSubmit={handleLogin}>
+        <label>USERNAME</label>
         <input
           type="text"
-          id="username"
-          name="username"
-          value={formik.values.username}
-          onChange={formik.handleChange}
-          placeholder="Enter username"
+          placeholder="Enter your username"
+          onChange={(e) => setUsername(e.target.value)}
         />
-        {formik.errors.username && (
-          <p className="errorMessage"> {formik.errors.username} </p>
-        )}
-
-        <label> Password </label>
+        <label>PASSWORD</label>
         <input
-          type="text"
-          id="password"
-          name="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
+          type="password"
           placeholder="Enter your password"
+          onChange={(e) => setPassword(e.target.value)}
         />
-        {formik.errors.password && (
-          <p className="errorMessage"> {formik.errors.password} </p>
-        )}
-        <button type="submit"> Submit </button>
+        <button type="submit" onSubmit={handleLogin}>
+          {" "}
+          Login{" "}
+        </button>
       </form>
+      <div className="login-register"> Don't have an account yet? </div>
+      <Link className="login-register-link" to="/register">
+        Register one for free{" "}
+      </Link>
     </section>
   );
 };
