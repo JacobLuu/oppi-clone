@@ -7,11 +7,11 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const newUser = {
+    const User = {
       username: username,
       password: password,
     };
-    console.log(newUser);
+    console.log(User);
   };
   //VALIDATE USERNAME
   useEffect(() => {
