@@ -32,7 +32,7 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           {...register("password", {
             required: true,
-            minLength: 8,
+            minLength: 6,
           })}
         />
         <button type="submit" onSubmit={handleSubmit(onSubmit)}>
