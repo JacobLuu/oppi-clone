@@ -27,7 +27,6 @@ const PollList = () => {
     {
       username: "test0007",
     },
-    
   ];
   return (
     <main className="poll-container">
