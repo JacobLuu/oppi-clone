@@ -2,8 +2,6 @@ import "./Login.css";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-
 
 async function loginUser(credentials) {
   return fetch("https://dev.oppi.live/api/admin/v1/auth/signin", {
@@ -28,20 +26,11 @@ const Login = ({ setToken }) => {
     loginUser(data)
   };
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   const token = await loginUser({
-  //     username,
-  //     password,
-  //   });
-  //   setToken(token);
-  // };
-
   return (
     <section className="login-container">
-      <div className="login-title"> Log in</div>
+      <div className="login-title">Sign in</div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label>USERNAME</label>
+        <label>EMAIL ADDRESS</label>
         <input
           name="email"
           type="text"
@@ -61,19 +50,15 @@ const Login = ({ setToken }) => {
           })}
         />
         <button type="submit" onSubmit={handleSubmit(onSubmit)}>
-          Login
+          Sign in
         </button>
       </form>
-      <div className="login-register"> Don't have an account yet? </div>
+      <div className="login-register"> Forgot Password? </div>
       <Link className="login-register-link" to="/register">
-        Register one for free
+        Create new account
       </Link>
     </section>
   );
 };
-
-// Login.propTypes = {
-//   setToken: PropTypes.func.isRequired,
-// };
 
 export default Login;

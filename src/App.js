@@ -4,14 +4,10 @@ import Login from "./Components/Login/Login";
 import NavBar from "./NavBar/NavBar";
 import PollList from "./Components/PollList/PollList";
 import PollDetail from "./Components/PollDetail/PollDetail";
-import useToken from "./Auth/useToken";
+
 
 function App() {
-  // const { token, setToken } = useToken();
 
-  // if (!token) {
-  //   return <Login setToken = {setToken} />
-  // }
   return (
     <Router>
       <NavBar />
