@@ -1,5 +1,3 @@
-import "./polldetail.css";
-
 import { useForm } from "react-hook-form";
 
 function PollDetail() {
@@ -30,7 +28,7 @@ function PollDetail() {
               <label className="col-form-label">Name:</label>
               <input
                 type="text"
-                className={`form-control ${errors.name && "invalid"}`}
+                className={`form-control  ${errors.name && "invalid"}`}
                 {...register("name", { required: "Name is Required" })}
                 onKeyUp={() => {
                   trigger("name");
