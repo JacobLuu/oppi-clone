@@ -13,8 +13,8 @@ function App() {
       <NavBar />
       <div className="App"> 
         <Routes>
-          <Route path="/" element={ <PollList />} />
-          <Route path="/login" element={ <Login />} />
+          <Route path="/" element={ <Login />} />
+          <Route path="/polllist" element={ <PollList />} />
           <Route path="/polldetail" element={ <PollDetail />} />
           <Route path="/navbar" element={ <NavBar />} />
         </Routes>
