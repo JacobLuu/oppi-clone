@@ -1,38 +1,22 @@
 import { useForm } from "react-hook-form";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function PollDetail() {
-  // const [name, setName] = useState("");
-  // const [question, setQuestion] = useState("");
-  // const [descriptions, setDescriptions] = useState("");
-  // const [start_date, setStart_date] = useState("");
-  // const [end_date, setEnd_date] = useState("");
+  const idPollDetail = sessionStorage.getItem("idPollDetail");
+  const accessToken = sessionStorage.getItem("AdminAccessToken");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    trigger,
-  } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
-    data.preventDefault();
-    const fieldName = data.target.getAttribute("name");
-    const fieldValue = data.target.value;
-
-    const newData = { ...data };
-    newData[fieldName] = fieldValue;
-
-    setData(newData);
+  const formatDate = (second, format) => {
+    let time = new Date(second * 1000);
+    let day = String(time.getDate()).padStart(2, "0");
+    let month = String(time.getMonth() + 1).padStart(2, "0");
+    let year = time.getFullYear();
+    if (format && format.format === "YYYY-MM-DD") {
+      return `${year}-${month}-${day}`;
+    }
+    return `${day}-${month}-${year}`;
   };
-
-  // console.log(watch());
-
-  // console.log(errors.name)
 
   const [data, setData] = useState({
     poll_name: "",
@@ -40,6 +24,68 @@ function PollDetail() {
     start_date: "",
     end_date: "",
   });
+
+  const [poll, setPolls] = useState();
+
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+
+    const fieldName = data.target.getAttribute("name");
+    const fieldValue = data.target.value;
+
+    const newData = { ...data };
+    newData[fieldName] = fieldValue;
+
+    setData(newData);
+
+    const newPoll = {
+      poll_name: data.poll_name,
+      poll_question: data.poll_question,
+      start_date: data.start_date,
+      end_date: data.end_date,
+    };
+
+    axios({
+      method: "put",
+      url: `https://dev.oppi.live/api/admin/v1/polls/${idPollDetail}`,
+      headers: {
+        Authorization: `Bearer  ${accessToken}`,
+      },
+    });
+    setPolls(newPoll);
+  };
+  
+  useEffect(() => {
+    axios
+      .get(`${"https://dev.oppi.live/api/admin/v1/polls"}/${idPollDetail}`, {
+        headers: {
+          Authorization: `Bearer  ${accessToken}`,
+        },
+      })
+      .then((respon) => {
+        if (respon.status === 200) {
+          setPolls(respon.data);
+          data.forEach((field) => {
+            if (field === "openedAt" || field === "closedAt") {
+              setValue(
+                field,
+                formatDate(respon.data[field], { format: "YYYY-MM-DD" })
+              );
+            } else
+              setValue(field, respon.data[field] ? respon.data[field] : "");
+          });
+        }
+      })
+      .catch((e) => console.log(e));
+  }, []);
 
   return (
     <div className="row justify-content-sm-center pt-5">
