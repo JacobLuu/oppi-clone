@@ -21,9 +21,14 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
   },
+  tableTitle:{
+    textAlign: "center",
+    fontWeight: "bold",
+    color:"#6c757d",
+  },
   tableContainer: {
     borderRadius: 15,
-    margin: "10px 10px",
+    margin: "15px 170px",
     maxWidth: 1000,
   },
   tableHeaderCell: {
@@ -111,6 +116,8 @@ const PollList = () => {
   };
 
   return (
+    <Typography gutterBottom variant="h3" component="div" className={classes.tableTitle}>
+          Poll Management
     <TableContainer component={Paper} className={classes.tableContainer}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
@@ -122,17 +129,20 @@ const PollList = () => {
             >
               Poll Question
             </TableCell>
-            <TableCell className={classes.tableHeaderCell}>
+            <TableCell 
+             className={classes.tableHeaderCell}>
               Start Date
             </TableCell>
-            <TableCell className={classes.tableHeaderCell}>End Date</TableCell>
-            <TableCell className={classes.tableHeaderCell}>
+            <TableCell 
+             className={classes.tableHeaderCell}>End Date</TableCell>
+            <TableCell 
+             className={classes.tableHeaderCell}>
               Participants
             </TableCell>
-            <TableCell align="center" className={classes.tableHeaderCell}>
+            <TableCell  align="center" className={classes.tableHeaderCell}>
               Status
             </TableCell>
-            <TableCell align="center" className={classes.tableHeaderCell}>
+            <TableCell  align="center" className={classes.tableHeaderCell}>
               Action
             </TableCell>
           </TableRow>
@@ -191,7 +201,7 @@ const PollList = () => {
                         maxHeight: { xs: 400, md: 170 },
                         maxWidth: { xs: 250, md: 200 },
                       }}
-                      alt=""
+                      alt="delete-poll-image"
                       src="https://admin.dev.oppi.live/static/media/img_decision.97fcdb38.png"
                     />
                   </DialogTitle>
@@ -225,6 +235,7 @@ const PollList = () => {
         </TableBody>
       </Table>
     </TableContainer>
+    </Typography>
   );
 };
 

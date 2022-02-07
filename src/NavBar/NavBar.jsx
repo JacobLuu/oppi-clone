@@ -5,7 +5,6 @@ const NavBar = () => {
   const [user,setUser] = useState(null);
   return (
     <nav className="navbar-container">
-      <Link to="/" className="navbar-home"> Poll List </Link>
       {user? (
         <>
         <p className="navbar-user">Hi, <span> {user}  </span> </p>
@@ -14,7 +13,7 @@ const NavBar = () => {
       ) : (    
         <>
       <Link to="/polldetail" className="navbar-login"> Poll Detail</Link>
-      <Link to="/login" className="navbar-login"> Login </Link>
+      <Link to="/" className="navbar-login"> Login </Link>
       <Link to="/register" className="navbar-register"> Register</Link>
       </>
 )}
