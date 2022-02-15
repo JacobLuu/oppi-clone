@@ -17,9 +17,9 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import Pagination from "@mui/material/Pagination";
 import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Pagination from '@mui/material/Pagination';
 
 const useStyles = makeStyles((theme) => ({
   table: {
@@ -63,15 +63,15 @@ const PollList = () => {
   const DEL_URL = "https://dev.oppi.live/api/admin/v1/polls";
 
   // delete function
-  const [open, setOpenDelete] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleClickOpen = (id) => {
-    setOpenDelete(true);
+    setIsDeleteModalOpen(true);
     setSelectedID(id);
   };
 
   const handleClose = () => {
-    setOpenDelete(false);
+    setIsDeleteModalOpen(false);
   };
 
   const deletePoll = async (id) => {
@@ -88,7 +88,7 @@ const PollList = () => {
   const handleDelete = async (id) => {
     await deletePoll(id);
     getData();
-    setOpenDelete(false);
+    setIsDeleteModalOpen(false);
   };
 
   //Pagination
@@ -103,17 +103,16 @@ const PollList = () => {
     let day = String(time.getDate()).padStart(2, "0");
     let month = String(time.getMonth() + 1).padStart(2, "0");
     let year = time.getFullYear();
+    if (format && format.format === "YYYY-MM-DD") {
+      return `${year}-${month}-${day}`;
+    }
     return `${day}-${month}-${year}`;
   };
 
-  const openDetail = async (id) => {
-    getDetail(id);
-    await navigate("/polldetail");
+  const openDetail =(id) => {
+   navigate(`/polldetail/${id}`);
   };
 
-  const getDetail = (id) => {
-    localStorage.setItem("ID", id);
-  };
 
   // get data
   const getData = async () => {
@@ -139,13 +138,9 @@ const PollList = () => {
   }, [offset]);
 
   return (
-    <Typography
-      gutterBottom
-      variant="h3"
-      component="div"
-      className={classes.tableTitle}
-    >
-      Poll Management
+
+      <React.Fragment>
+        <Typography>
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -181,21 +176,24 @@ const PollList = () => {
               <TableRow
                 key={poll.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                onClick={(e)=> {
+                  e.stopPropagation();
+                  openDetail(poll.id)}}
               >
-                <TableCell onClick={openDetail} component="th" scope="row">
+                <TableCell component="th" scope="row">
                   {poll.title}
                 </TableCell>
-                <TableCell onClick={openDetail}>{poll.question}</TableCell>
-                <TableCell onClick={openDetail}>
+                <TableCell>{poll.question}</TableCell>
+                <TableCell>
                   {formatDate(poll.openedAt)}
                 </TableCell>
-                <TableCell onClick={openDetail}>
+                <TableCell>
                   {formatDate(poll.closedAt)}
                 </TableCell>
-                <TableCell onClick={openDetail} align="center">
+                <TableCell align="center">
                   {poll.participantCount}
                 </TableCell>
-                <TableCell onClick={openDetail} align="center">
+                <TableCell  align="center">
                   <Typography
                     className={classes.status}
                     style={{
@@ -213,76 +211,79 @@ const PollList = () => {
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  {poll.action}
                   <Button
                     variant="outlined"
                     startIcon={<DeleteIcon />}
-                    onClick={() => handleClickOpen(poll.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClickOpen(poll.id)}}
                   >
                     Delete
                   </Button>
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title" align="center">
-                      <Box
-                        component="img"
-                        sx={{
-                          height: 400,
-                          width: 250,
-                          maxHeight: { xs: 400, md: 170 },
-                          maxWidth: { xs: 250, md: 200 },
-                        }}
-                        alt="delete-poll-image"
-                        src="https://admin.dev.oppi.live/static/media/img_decision.97fcdb38.png"
-                      />
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText
-                        id="alert-dialog-description"
-                        align="center"
-                      >
-                        Are you sure you would like to delete this poll? Once
-                        deleted, it cannot be retrieved.
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        onClick={handleClose}
-                        variant="outlined"
-                        color="primary"
-                      >
-                        Keep Poll
-                      </Button>
-                      <Button
-                        onClick={() => handleDelete(selectedID)}
-                        autoFocus
-                        variant="outlined"
-                        color="error"
-                      >
-                        Delete
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
+                  
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination
-        count={page}
-        offset={offset}
-        variant="outlined"
-        size="small"
-        shape="rounded"
-        page={currentPage}
-        onChange={(e, page) => handlePage(page)}
+      </Typography>
+      <div style={{margin:"auto"}}>
+      <Pagination 
+      count={page} 
+      variant="outlined" 
+      shape="rounded"
+      onChange={(e, page) => handlePage(page)}
       />
-    </Typography>
+      </div>
+
+      <Dialog
+      open={isDeleteModalOpen}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title" align="center">
+        <Box
+          component="img"
+          sx={{
+            height: 400,
+            width: 250,
+            maxHeight: { xs: 400, md: 170 },
+            maxWidth: { xs: 250, md: 200 },
+          }}
+          alt="delete-poll-image"
+          src="https://admin.dev.oppi.live/static/media/img_decision.97fcdb38.png"
+        />
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText
+          id="alert-dialog-description"
+          align="center"
+        >
+          Are you sure you would like to delete this poll? Once
+          deleted, it cannot be retrieved.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={handleClose}
+          variant="outlined"
+          color="primary"
+        >
+          Keep Poll
+        </Button>
+        <Button
+          onClick={() => handleDelete(selectedID)}
+          autoFocus
+          variant="outlined"
+          color="error"
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+    </React.Fragment>
   );
 };
 

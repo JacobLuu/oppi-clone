@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import clientPath from "../../constants/clientPath";
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -25,7 +25,7 @@ const Login = ({ setToken }) => {
             localStorage.setItem("AdminAccessToken", res.data.token);
           }
           setToken().then(() => {
-            navigate("/polllist");
+            navigate(clientPath.POLLLIST);
           });
         }
       })

@@ -12,9 +12,7 @@ const NavBar = () => {
         </>
       ) : (    
         <>
-      <Link to="/polldetail" className="navbar-login"> Poll Detail</Link>
-      <Link to="/" className="navbar-login"> Login </Link>
-      <Link to="/register" className="navbar-register"> Register</Link>
+      <Link to="/register" className="navbar-register"> Log out</Link>
       </>
 )}
     </nav>
