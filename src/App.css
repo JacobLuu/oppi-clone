@@ -17,3 +17,11 @@ body,
   font-family: "Inter", sans-serif;
   background-color: #ffffff;
 }
+.MuiPaginationItem-root {
+  width: 100%;
+}
+ul.css-wjh20t-MuiPagination-ul {
+  justify-content: space-between;
+  width: 30%;
+  margin-left: 31%;
+}

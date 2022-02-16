@@ -1,195 +1,181 @@
-import { useForm } from "react-hook-form";
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useForm } from "react-hook-form";
+import TextField from "@mui/material/TextField";
+import { makeStyles } from "@mui/styles";
+import { useParams } from "react-router-dom";
+
+const useStyles = makeStyles((theme) => ({
+  formStyle: {
+    backgroundColor: '#ecf5fd',
+    margin: 'auto',
+    width: '80%',
+    padding: '0 15px',
+    borderRadius: '2.5rem',
+    boxShadow: '0 5px 15px rgb(0,0,0,0.2)',
+}}));
 
 function PollDetail() {
-  const idPollDetail = sessionStorage.getItem("idPollDetail");
-  const accessToken = sessionStorage.getItem("AdminAccessToken");
+  const classes = useStyles();
+  const [poll, setPoll] = useState();
+  const ID = localStorage.getItem("ID");
+  const AccessToken = localStorage.getItem("AdminAccessToken");
+  const URL_DETAIL = `https://dev.oppi.live/api/admin/v1/polls`;
+  const params = useParams();
 
   const formatDate = (second, format) => {
     let time = new Date(second * 1000);
     let day = String(time.getDate()).padStart(2, "0");
     let month = String(time.getMonth() + 1).padStart(2, "0");
     let year = time.getFullYear();
-    if (format && format.format === "YYYY-MM-DD") {
-      return `${year}-${month}-${day}`;
-    }
-    return `${day}-${month}-${year}`;
+    return `${year}-${month}-${day}`;
   };
-
-  const [data, setData] = useState({
-    poll_name: "",
-    poll_question: "",
-    start_date: "",
-    end_date: "",
-  });
-
-  const [poll, setPolls] = useState();
-
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-  } = useForm();
+  const { setValue, control, handleSubmit, register } = useForm({});
 
   const onSubmit = (data) => {
-    console.log(data);
-
-    const fieldName = data.target.getAttribute("name");
-    const fieldValue = data.target.value;
-
-    const newData = { ...data };
-    newData[fieldName] = fieldValue;
-
-    setData(newData);
-
-    const newPoll = {
-      poll_name: data.poll_name,
-      poll_question: data.poll_question,
-      start_date: data.start_date,
-      end_date: data.end_date,
-    };
-
-    axios({
-      method: "put",
-      url: `https://dev.oppi.live/api/admin/v1/polls/${idPollDetail}`,
-      headers: {
-        Authorization: `Bearer  ${accessToken}`,
-      },
-    });
-    setPolls(newPoll);
-  };
-  
-  useEffect(() => {
-    axios
-      .get(`${"https://dev.oppi.live/api/admin/v1/polls"}/${idPollDetail}`, {
-        headers: {
-          Authorization: `Bearer  ${accessToken}`,
-        },
+    if (data.title && data.question && data.description) {
+      const dataSend = {
+        ...poll,
+        name: data.title.trim(),
+        question: data.question.trim(),
+        description: data.description.trim(),
+        is_turn_on_intergration_setting: true,
+        passcode: "2123124",
+      };
+      axios({
+        method: "put",
+        url: `${URL_DETAIL}/${params.pollId}`,
+        headers: { Authorization: `Bearer ${AccessToken}` },
+        data: dataSend,
       })
-      .then((respon) => {
-        if (respon.status === 200) {
-          setPolls(respon.data);
-          data.forEach((field) => {
-            if (field === "openedAt" || field === "closedAt") {
-              setValue(
-                field,
-                formatDate(respon.data[field], { format: "YYYY-MM-DD" })
-              );
-            } else
-              setValue(field, respon.data[field] ? respon.data[field] : "");
-          });
-        }
+        .then(alert("Done !\nInformation updated"), getData())
+        .catch((e) => alert(e));
+    }
+  };
+
+  const getData = () => {
+    return axios
+      .get(`${URL_DETAIL}/${params.pollId}`, {
+        headers: { Authorization: `Bearer ${AccessToken}` },
+      })
+      .then((response) => {
+        setValue("title", response.data.title);
+        setValue("question", response.data.question);
+        setValue("description", response.data.description);
+        setValue("openedAt", formatDate(response.data.openedAt));
+        setValue("closedAt", formatDate(response.data.closedAt));
+        setPoll(response.data);
       })
       .catch((e) => console.log(e));
+  };
+  useEffect(() => {
+    getData();
   }, []);
-
   return (
-    <div className="row justify-content-sm-center pt-5">
-      <div className="col-sm-6 shadow round pb-3">
-        <h1 className="text-center pt-3 text-secondary">Poll Detail</h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-group">
-            <label className="col-form-label">Poll Name*</label>
-            <input
-              type="text"
-              name="poll_name"
-              className={`form-control  ${errors.name && "invalid"}`}
-              {...register("name", { required: "Poll Name is Required" })}
-              onKeyUp={() => {
-                trigger("name");
-              }}
-              onChange={handleSubmit}
-            />
-            {errors.name && (
-              <small className="text-danger">{errors.name.message}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label className="col-form-label">Poll Question*</label>
-            <input
-              type="text"
-              name="poll_question"
-              className={`form-control ${errors.question && "invalid"}`}
-              {...register("question", {
-                required: "Poll Question is Required",
-              })}
-              onKeyUp={() => {
-                trigger("question");
-              }}
-              onChange={handleSubmit}
-            />
-            {errors.question && (
-              <small className="text-danger">{errors.question.message}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label className="col-form-label">Description*</label>
-            <textarea
-              name="description"
-              className={`form-control ${errors.message && "invalid"}`}
-              {...register("message", {
-                required: "Message is Required",
-                maxLength: {
-                  value: 999,
-                  message: "Max 999 characters ",
-                },
-              })}
-              onKeyUp={() => {
-                trigger("message");
-              }}
-              onChange={handleSubmit}
-            ></textarea>
-            {errors.message && (
-              <small className="text-danger">{errors.message.message}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label className="col-form-label">Start Date:</label>
-            <input
-              name="start_date"
-              type="date"
-              className={`form-control ${errors.date && "invalid"}`}
-              {...register("start_date", {
-                required: "Start Date is Required",
-              })}
-              onKeyUp={() => {
-                trigger("start_date");
-              }}
-              onChange={handleSubmit}
-            />
-            {errors.date && (
-              <small className="text-danger">{errors.date.message}</small>
-            )}
-          </div>
-          <div className="form-group">
-            <label className="col-form-label">End Date:</label>
-            <input
-              name="end_date"
-              type="date"
-              className={`form-control ${errors.date && "invalid"}`}
-              {...register("end_date", { required: "End Date is Required" })}
-              onKeyUp={() => {
-                trigger("end_date");
-              }}
-              onChange={handleSubmit}
-            />
-            {errors.date && (
-              <small className="text-danger">{errors.date.message}</small>
-            )}
-          </div>
+    <div className={classes.formStyle}>
+      <form className="col-xl-12" onSubmit={handleSubmit(onSubmit)}>
+        <h1 className="text-left text-dark my-5">Poll Detail Form</h1>
+        <div className="col-xl-12">
+          <label htmlFor="pollName">Poll Name*</label>
           <input
-            type="submit"
-            className="btn btn-primary my-3"
-            value="Submit"
+            type="text"
+            className="form-control col-xl-12"
+            id="pollName"
+            aria-describedby="pollName"
+            {...register("title")}
           />
-        </form>
-      </div>
+          <div>
+            <small
+              style={{ float: "right" }}
+              id="pollName"
+              className="form-text text-muted text-right"
+            >
+              Max 80 characters
+            </small>
+          </div>
+        </div>
+        <div className="col-lg-12">
+          <label htmlFor="pollQuestion">Poll Question*</label>
+          <input
+            name="question"
+            type="text"
+            className="form-control"
+            id="pollQuestion"
+            aria-describedby="pollQ"
+            {...register("question")}
+          />
+          <div>
+            <small
+              style={{ float: "right" }}
+              id="pollQ"
+              className="form-text text-muted text-right"
+            >
+              Max 255 characters
+            </small>
+          </div>
+        </div>
+        <div className="col-lg-12">
+          <label htmlFor="exampleFormControlTextarea1">Description*</label>
+          <textarea
+            name="description"
+            className="form-control"
+            id="exampleFormControlTextarea1"
+            rows="10"
+            {...register("description")}
+          ></textarea>
+          <div>
+            <small
+              style={{ float: "right" }}
+              id="pollName"
+              className="form-text text-muted text-right"
+            >
+              Max 999 characters
+            </small>
+          </div>
+        </div>
+        <div className="row my-4 col-xl-12 d-flex justify-content-start ">
+          <div className="col-lg-5 ">
+            <label className="mr-2">From:</label>
+            <TextField
+              name="openedAt"
+              id="date"
+              label=""
+              type="date"
+              sx={{ width: "13em", height: "1em" }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              {...register("openedAt")}
+            />
+          </div>
+          <div className="col-lg-5 ">
+            <label className="mr-2">To: </label>
+            <TextField
+              name="closedAt"
+              id="date"
+              label=""
+              type="date"
+              sx={{ width: "13em", height: "1em" }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              {...register("closedAt")}
+            />
+          </div>
+        </div>
+        <div className="row col-xl-12 my-4 d-flex justify-content-between ">
+          <div className="">
+            <button
+              type="submit"
+              style={{ color: "white", width:"17%",float:"right"}}
+              className="b col-lg-12 col-sm-2 btn btn-warning mt-3"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 }
-
 export default PollDetail;
