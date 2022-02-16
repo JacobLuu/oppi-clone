@@ -9,7 +9,7 @@ function ProtectedRoute({ children }) {
 
   localStorage.setItem("CACHED_URL", location.pathname);
   const cachedUrl = localStorage.getItem("CACHED_URL");
-
+  
   if (isLoggedIn) {
     return children;
   }
