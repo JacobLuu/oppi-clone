@@ -96,7 +96,7 @@ const PollList = () => {
   };
 
   //Pagination
-  const handlePage = (page) => {
+  const handleChangePage = (page) => {
     setCurrentPage(page);
     setOffset((page - 1) * 10);
   };
@@ -231,7 +231,7 @@ const PollList = () => {
           count={page}
           variant="outlined"
           shape="rounded"
-          onChange={(e, page) => handlePage(page)}
+          onChange={(e, page) => handleChangePage(page)}
         />
       </div>
 

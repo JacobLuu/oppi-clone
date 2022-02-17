@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./navbar.css";
 const NavBar = () => {
@@ -19,11 +19,12 @@ const NavBar = () => {
       .catch((e) => console.log(e));
   };
   return (
-      <div className="navbar-home">
-      <Button to="/" 
-      className="navbar-logout"
-      onClick={handleLogOut}> Log out</Button>
-      </div>
-)}
+    <div className="navbar-home">
+      <Button to="/" className="navbar-logout" onClick={handleLogOut}>
+        Log out
+      </Button>
+    </div>
+  );
+};
 
 export default NavBar;
