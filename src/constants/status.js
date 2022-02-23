@@ -1,0 +1,6 @@
+export const REQUEST_STATUS = {
+  IDLE: "IDLE",
+  REQUESTING: "REQUESTING",
+  SUCCESS: "SUCCESS",
+  ERROR: "ERROR",
+};

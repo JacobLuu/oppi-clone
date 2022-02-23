@@ -5,11 +5,11 @@ import clientPath from "../constants/clientPath";
 function ProtectedRoute({ children }) {
   const location = useLocation();
   const accessToken = localStorage.getItem("AdminAccessToken");
+  console.log(accessToken);
   const isLoggedIn = Boolean(accessToken);
-
   localStorage.setItem("CACHED_URL", location.pathname);
   const cachedUrl = localStorage.getItem("CACHED_URL");
-  
+  console.log(cachedUrl);
   if (isLoggedIn) {
     return children;
   }
@@ -22,6 +22,5 @@ function ProtectedRoute({ children }) {
   }
   return <Navigate to={clientPath.LOGIN} />;
 }
-
 
 export default ProtectedRoute;
