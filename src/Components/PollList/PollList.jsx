@@ -21,6 +21,13 @@ import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import Pagination from "@mui/material/Pagination";
 import NavBar from "../../NavBar/NavBar";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setOffset,
+  getDataAction,
+  setPollId,
+  deletePollAction,
+} from "./reducer";
 
 const useStyles = makeStyles((theme) => ({
   Container: {
@@ -56,49 +63,31 @@ const useStyles = makeStyles((theme) => ({
 
 const PollList = () => {
   const classes = useStyles();
-  const [offset, setOffset] = useState(0);
-  const [polls, setPolls] = useState([]);
+  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedID, setSelectedID] = useState();
-  const [page, setPage] = useState(0);
+  const pollsState = useSelector((state) => state.polllist);
   const navigate = useNavigate();
-  const URL = `https://dev.oppi.live/api/admin/v1/polls?offset=${offset}&limit=10&direction=desc&search=`;
-  const SIGNOUT_URL = "https://dev.oppi.live/api/admin/v1/auth/signout";
-  const DEL_URL = "https://dev.oppi.live/api/admin/v1/polls";
 
   // delete function
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleClickOpen = (id) => {
     setIsDeleteModalOpen(true);
-    setSelectedID(id);
+    setPollId(id);
   };
 
   const handleClose = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const deletePoll = async (id) => {
-    return await axios
-      .delete(`${DEL_URL}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("AdminAccessToken")}`,
-        },
-      })
-      .then((respon) => console.log(respon))
-      .catch((e) => console.log(e));
-  };
-
-  const handleDelete = async (id) => {
-    await deletePoll(id);
-    getData();
-    setIsDeleteModalOpen(false);
+  const handleDelete = () => {
+    dispatch(deletePollAction());
   };
 
   //Pagination
   const handleChangePage = (page) => {
     setCurrentPage(page);
-    setOffset((page - 1) * 10);
+    dispatch(setOffset((page - 1) * 10));
   };
 
   // format date
@@ -117,28 +106,9 @@ const PollList = () => {
     navigate(`/polldetail/${id}`);
   };
 
-  // get data
-  const getData = async () => {
-    const AccessToken = localStorage.getItem("AdminAccessToken");
-    try {
-      const response = await axios.get(URL, {
-        headers: { Authorization: `Bearer ${AccessToken}` },
-      });
-      const data = response.data.list;
-      console.log(data);
-
-      setPolls(data);
-      const pages = response.data.totalCount;
-      pages % 10 === 0
-        ? setPage(pages / 10)
-        : setPage((pages - (pages % 10)) / 10 + 1);
-    } catch (e) {
-      console.log(e);
-    }
-  };
   useEffect(() => {
-    getData();
-  }, [offset]);
+    dispatch(getDataAction());
+  }, [pollsState.offset]);
 
   return (
     <React.Fragment>
@@ -175,7 +145,7 @@ const PollList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {polls.map((poll) => (
+              {pollsState.polls.data?.list.map((poll) => (
                 <TableRow
                   key={poll.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -228,9 +198,10 @@ const PollList = () => {
       </div>
       <div style={{ margin: "auto", padding: "15px 0px" }}>
         <Pagination
-          count={page}
+          count={pollsState.pages}
           variant="outlined"
           shape="rounded"
+          page={currentPage}
           onChange={(e, page) => handleChangePage(page)}
         />
       </div>
@@ -265,7 +236,7 @@ const PollList = () => {
             Keep Poll
           </Button>
           <Button
-            onClick={() => handleDelete(selectedID)}
+            onClick={handleDelete}
             autoFocus
             variant="outlined"
             color="error"

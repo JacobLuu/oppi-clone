@@ -1,21 +1,32 @@
 import "./Login.css";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import clientPath from "../../constants/clientPath";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { setErrorMessage, loginRequest } from "./reducer";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks.ts";
+import { REQUEST_STATUS } from "../../constants/status";
+import { ACCESS_TOKEN } from "../../constants/localStorage";
 
 const schema = yup.object().shape({
   email: yup.string().email().required("Email is required!"),
   password: yup.string().required("Password is required!"),
 });
-const Login = ({ setToken }) => {
-  const [errorMessage, setErrorMessage] = useState("");
+const Login = () => {
+  const dispatch = useAppDispatch();
+  const { errorMessage, loginStatus } = useAppSelector((state) => state.login);
 
   let navigate = useNavigate();
+
+  const handleLogin = () => {
+    const Token = localStorage.getItem(ACCESS_TOKEN);
+    if (Token && loginStatus === REQUEST_STATUS.SUCCESS) {
+      navigate(clientPath.POLLLIST);
+    } else navigate(clientPath.LOGIN);
+  };
 
   const {
     register,
@@ -24,28 +35,14 @@ const Login = ({ setToken }) => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
   const onSubmit = (data) => {
-    axios
-      .post("https://dev.oppi.live/api/admin/v1/auth/signin", data)
-      .then((res) => {
-        if (res.status === 200) {
-          setErrorMessage("");
-          async function setToken() {
-            localStorage.setItem("AdminAccessToken", res.data.token);
-          }
-          setToken().then(() => {
-            navigate(clientPath.POLLLIST);
-          });
-        }
-      })
-      .catch((e) => {
-        if (e.response.data.message === "Incorrect username or password") {
-          setErrorMessage("Email or password is invalid, please try again.");
-        } else {
-          setErrorMessage(" ");
-        }
-      });
+    dispatch(loginRequest(data));
   };
+
+  useEffect(() => {
+    handleLogin();
+  }, [loginStatus]);
   return (
     <div className="container">
       <section className="login-container">

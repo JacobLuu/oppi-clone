@@ -1,20 +1,20 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { REQUEST_STATUS } from "../constants/status";
-import { ACCESS_TOKEN } from "../constants/localStorage";
+import { createSlice } from "@reduxjs/toolkit";
+import { ACCESS_TOKEN } from "../../constants/localStorage";
+import { REQUEST_STATUS } from "../../constants/status";
 
 const initialState = {
   errorMessage: "",
   loginStatus: REQUEST_STATUS.IDLE,
 };
 
-const authSlice = createSlice({
-  name: "auth",
+export const slice = createSlice({
+  name: "login",
   initialState,
   reducers: {
     setErrorMessage: (state, action) => {
       state.errorMessage = action.payload;
     },
-    loginRequest: (state) => {
+    loginRequest: (state, action) => {
       state.loginStatus = REQUEST_STATUS.REQUESTING;
     },
     loginSuccess: (state, { payload: { token } }) => {
@@ -27,6 +27,8 @@ const authSlice = createSlice({
     },
   },
 });
+
 export const { setErrorMessage, loginRequest, loginSuccess, loginFail } =
-  authSlice.actions;
-export default authSlice.reducer;
+  slice.actions;
+
+export default slice.reducer;

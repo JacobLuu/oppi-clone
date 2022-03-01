@@ -4,3 +4,15 @@ export const REQUEST_STATUS = {
   SUCCESS: "SUCCESS",
   ERROR: "ERROR",
 };
+
+export const STATUS_CODE = {
+  SUCCESS: 200,
+  CREATED_SUCCESS: 201,
+  UNAUTHORIZED: 401,
+  BAD_REQUEST: 400,
+};
+
+export default {
+  REQUEST_STATUS,
+  STATUS_CODE,
+};
