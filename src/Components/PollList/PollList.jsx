@@ -73,15 +73,17 @@ const PollList = () => {
 
   const handleClickOpen = (id) => {
     setIsDeleteModalOpen(true);
-    setPollId(id);
+    dispatch(setPollId(id));
   };
 
   const handleClose = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleDelete = () => {
-    dispatch(deletePollAction());
+  const handleDelete = (id) => {
+    dispatch(deletePollAction(id));
+    console.log("id: ", id);
+    setIsDeleteModalOpen(false);
   };
 
   //Pagination
@@ -103,6 +105,7 @@ const PollList = () => {
   };
 
   const openDetail = (id) => {
+    dispatch(setPollId(id));
     navigate(`/polldetail/${id}`);
   };
 
@@ -145,7 +148,7 @@ const PollList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {pollsState.polls.data?.list.map((poll) => (
+              {pollsState.polls.map((poll) => (
                 <TableRow
                   key={poll.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

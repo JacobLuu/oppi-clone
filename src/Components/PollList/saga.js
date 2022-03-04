@@ -15,13 +15,12 @@ import { STATUS_CODE } from "../../constants/status";
 
 function* getDataSaga() {
   const offset = yield select((state) => state.polllist.offset);
-  console.log("offset : ", offset);
+  console.log("offset :      ",offset)
   try {
-    const response = yield call(getDataService, offset);
+    const response = yield call(getDataService,offset);
+    console.log(offset);
     if (response.status === STATUS_CODE.SUCCESS) {
-      const polls = yield call(getDataService, response.data.list);
-      yield put(setPolls(polls));
-
+      yield put(setPolls(response.data.list));
       const pages = response.data.totalCount;
       pages % 10 === 0
         ? yield put(setPages(pages / 10))
