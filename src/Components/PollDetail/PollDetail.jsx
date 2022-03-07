@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { makeStyles } from "@mui/styles";
@@ -7,6 +6,8 @@ import { useParams } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import NavBar from "../../NavBar/NavBar";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchDataPollAction, updatePollAction } from "./reducer";
 
 const useStyles = makeStyles((theme) => ({
   formStyle: {
@@ -35,12 +36,12 @@ const schema = yup.object().shape({
 });
 
 function PollDetail() {
+  const fields = ["title", "question", "description", "openedAt", "closedAt"];
   const classes = useStyles();
-  const [poll, setPoll] = useState();
-  const ID = localStorage.getItem("ID");
-  const AccessToken = localStorage.getItem("AdminAccessToken");
-  const URL_DETAIL = `https://dev.oppi.live/api/admin/v1/polls`;
   const params = useParams();
+  const dispatch = useDispatch();
+  const dataPoll = useSelector((state) => state.polldetail.dataPoll);
+  console.log(dataPoll);
 
   const formatDate = (second, format) => {
     let time = new Date(second * 1000);
@@ -58,43 +59,21 @@ function PollDetail() {
   } = useForm({ resolver: yupResolver(schema) });
 
   const onSubmit = (data) => {
-    if (data.title && data.question && data.description) {
-      const payload = {
-        ...poll,
-        name: data.title.trim(),
-        question: data.question.trim(),
-        description: data.description.trim(),
-        is_turn_on_intergration_setting: true,
-        passcode: "2123124",
-      };
-      axios({
-        method: "put",
-        url: `${URL_DETAIL}/${params.pollId}`,
-        headers: { Authorization: `Bearer ${AccessToken}` },
-        data: payload,
-      })
-        .then(alert("Done !\nInformation updated"), getData())
-        .catch((e) => alert(e));
-    }
+    dispatch(updatePollAction({ data, pollId: params.pollId }));
   };
 
-  const getData = () => {
-    return axios
-      .get(`${URL_DETAIL}/${params.pollId}`, {
-        headers: { Authorization: `Bearer ${AccessToken}` },
-      })
-      .then((response) => {
-        setValue("title", response.data.title);
-        setValue("question", response.data.question);
-        setValue("description", response.data.description);
-        setValue("openedAt", formatDate(response.data.openedAt));
-        setValue("closedAt", formatDate(response.data.closedAt));
-        setPoll(response.data);
-      })
-      .catch((e) => console.log(e));
-  };
   useEffect(() => {
-    getData();
+    fields.forEach((field) => {
+      if (field === "openedAt" || field === "closedAt") {
+        setValue(field, formatDate(dataPoll[field], { format: "YYYY-MM-DD" }));
+      } else setValue(field, dataPoll[field] ? dataPoll[field] : "");
+    });
+  }, [dataPoll]);
+
+  useEffect(() => {
+    if (params.pollId) {
+      dispatch(fetchDataPollAction(params.pollId));
+    }
   }, []);
   return (
     <React.Fragment>
@@ -108,6 +87,7 @@ function PollDetail() {
               type="text"
               className="form-control col-xl-12"
               id="pollName"
+              control={control}
               aria-describedby="pollName"
               {...register("title")}
             />
@@ -203,6 +183,7 @@ function PollDetail() {
                 type="submit"
                 style={{ color: "white", width: "17%", float: "right" }}
                 className="b col-lg-12 col-sm-2 btn btn-warning mt-3"
+                onClick={onSubmit}
               >
                 Save
               </button>
