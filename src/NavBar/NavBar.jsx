@@ -1,21 +1,29 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./navbar.css";
 const NavBar = () => {
-  const [user,setUser] = useState(null);
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    axios
+      .post("https://dev.oppi.live/api/admin/v1/auth/signout")
+      .then((respon) => {
+        if (respon.status === 200) {
+          localStorage.removeItem("AdminAccessToken");
+          localStorage.removeItem("CACHED_URL");
+          localStorage.removeItem("idPollDetail");
+          navigate("/");
+        }
+      })
+      .catch((e) => console.log(e));
+  };
   return (
-    <nav className="navbar-container">
-      {user? (
-        <>
-        <p className="navbar-user">Hi, <span> {user}  </span> </p>
-        <Link to="/logout" className="navbar-logout"> Log out</Link>
-        </>
-      ) : (    
-        <>
-      <Link to="/register" className="navbar-register"> Log out</Link>
-      </>
-)}
-    </nav>
+    <div className="navbar-home">
+      <Button to="/" className="navbar-logout" onClick={handleLogOut}>
+        Log out
+      </Button>
+    </div>
   );
 };
 

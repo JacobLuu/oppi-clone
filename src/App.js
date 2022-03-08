@@ -2,7 +2,6 @@ import "./App.css";
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./Components/Login/Login";
-import NavBar from "./NavBar/NavBar";
 import PollList from "./Components/PollList/PollList";
 import PollDetail from "./Components/PollDetail/PollDetail";
 import { Navigate } from "react-router-dom";
@@ -16,7 +15,6 @@ function App() {
   return (
     <React.Fragment>
       <Router>
-        <NavBar />
         <div className="App">
           <Routes>
             <Route path="/" element={<Navigate to={LOGIN} />}></Route>
